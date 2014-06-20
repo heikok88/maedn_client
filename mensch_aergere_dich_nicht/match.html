@@ -1,0 +1,78 @@
+<div class="row">
+  <div class="col-lg-8">
+    <div class="row board-row" ng-repeat="row in board track by $index">
+      <div class="board-cell" ng-repeat="cell in row track by $index">
+        <div class="content">
+          <div class="place"
+            ng-class="{red: cell == 'R', blue: cell == 'B', green: cell == 'G', yellow: cell == 'Y'}" ng-show="cell != 'X'"
+            ng-click="clickPlace($index, $parent.$index)">
+            <div class="token" ng-class="{red: tokens[$index][$parent.$index] == 'red', blue: tokens[$index][$parent.$index] == 'blue', green: tokens[$index][$parent.$index] == 'green', yellow: tokens[$index][$parent.$index] == 'yellow', selected: selectedTokenX == $index && selectedTokenY == $parent.$index}"
+                ng-hide="!tokens[$index][$parent.$index]">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="col-lg-4">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>&nbsp;</th>
+          <th>Spieler</th>
+          <th>Bereit?</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="player-list" ng-repeat="player in players">
+          <td><div class="player-color" ng-class="player.color"></div></td>
+          <td>{{player.nickname}}</td>
+          <td><span ng-show="player.ready">Ja</span><span ng-hide="player.ready">Nein</span></td>
+        </tr>
+      </tbody>
+    </table>
+    
+    <div class="row">
+      <div class="col-lg-12">
+        <button type="button" class="btn btn-success" ng-click="rollDice()" ng-show="matchStarted" ng-disabled="!myTurn || matchDone">Würfeln</button>
+        <button type="button" class="btn btn-info" ng-click="makeReady()" ng-disabled="ready" ng-hide="matchStarted">Bereit</button>
+        <button type="button" class="btn btn-danger" ng-click="leave()">Spiel verlassen</button>
+      </div>
+    </div>
+    
+    <div class="row status" ng-show="matchStarted">
+      <div class="col-lg-12">
+        <p ng-show="myTurn && !matchDone">Du bist am Zug!</p>
+        <p ng-show="!myTurn && !matchDone">{{currentPlayerNickname}} ist am Zug.</p>
+        <p ng-show="currentEyesMyTurn && currentEyes > 0 && !matchDone">Du hast eine {{currentEyes}} gewürfelt.</p>
+        <p ng-show="!currentEyesMyTurn && currentEyes > 0 && !matchDone">{{currentEyesNickname}} hat eine {{currentEyes}} gewürfelt.</p>
+        <p ng-show="matchDone">Das Spiel ist beendet.</p>
+      </div>
+    </div>
+    
+    <div class="row results" ng-show="matchStarted">
+      <div class="col-lg-12">
+        <table class="table" ng-show="donePlayers.length">
+          <thead>
+            <tr>
+              <th>Ergebnis</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="player-list" ng-repeat="player in donePlayers">
+              <td>{{$index + 1}}. <div class="player-color" ng-class="player.color"></div> {{player.nickname}}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="timerContainer" ng-show="timerSeconds >= 0">
+  <div class="timerTable">
+    <div class="timer">{{timerSeconds}}</div>
+  </div>
+</div>

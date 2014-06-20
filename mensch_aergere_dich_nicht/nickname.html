@@ -1,0 +1,15 @@
+<div class="modal-header">
+  <h4 class="modal-title">Nickname wählen</h4>
+</div>
+<div class="modal-body">
+  <ng-form name="nicknameForm" novalidate role="form">
+    <div class="form-group input-group-lg" ng-class="{'has-error': nicknameForm.nickname.$dirty && nicknameForm.nickname.$invalid}">
+      <label class="control-label" for="nickname">Nickname:</label>
+      <input type="text" class="form-control" name="nickname" id="nickname" ng-model="player.nickname" ng-keyup="hitEnter($event)" required>
+    </div>
+  </ng-form>
+</div>
+<div class="modal-footer">
+  <button type="button" class="btn btn-default" ng-click="cancel()">Abbrechen</button>
+  <button type="button" class="btn btn-primary" ng-click="save()" ng-disabled="!player.nickname.length">OK</button>
+</div>

@@ -1,0 +1,23 @@
+<div class="row">
+<div class="col-lg-6 col-md-8 col-sm-12">
+<table class="table table-striped table-hover">
+  <thead>
+  <tr>
+    <th>ID</th>
+    <th>Teilnehmer</th>
+    <th>&nbsp;</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr ng-repeat="match in matches | orderBy:'id'">
+    <td>#{{match.id}}</td>
+    <td>{{match.countMembers}}</td>
+    <td><a ng-show="match.countMembers < 4" href="" ng-click="join(match.id)" class="btn btn-default btn-xs">Teilnehmen</a></td>
+  </tr>
+  <tr ng-show="!matches.length && !loading" class="no-matches"><td colspan="3">keine Spiele gefunden</td></tr>
+  <tr ng-show="loading" class="no-matches"><td colspan="3">Lade spiele ...</td></tr>
+  </tbody>
+</table>
+<button type="button" class="btn btn-primary" ng-click="create()">Neues Spiel</button>
+</div>
+</div>

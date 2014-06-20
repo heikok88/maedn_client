@@ -1,0 +1,7 @@
+apply from: 'https://raw.github.com/michel-kraemer/asciidoc-toolchain/0.1/asciidoc-toolchain.gradle'
+
+defaultTasks 'pdf'
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '1.8'
+}

@@ -1,0 +1,141 @@
+tr.no-matches {
+	font-style: italic;
+}
+
+.player-list .player-color {
+	width: 16px;
+	height: 16px;
+	display: inline-block;
+}
+
+.player-list .player-color.red {
+	background: #dd3311;
+}
+
+.player-list .player-color.yellow {
+	background: #dddd11;
+}
+
+.player-list .player-color.blue {
+	background: #1133dd;
+}
+
+.player-list .player-color.green {
+	background: #11dd33;
+}
+
+.board-row {
+	padding-left: 15px;
+	padding-right: 15px;
+}
+
+.board-cell {
+    position: relative;
+    min-height: 1px;
+    width: 9.091%;
+    float: left;
+}
+
+.board-cell:before {
+	content: "";
+	display: block;
+	padding-top: 100%;
+}
+
+.board-cell .content {
+	background-color: #ffffcc;
+	position: absolute;
+	top: 0;
+	left: 0;
+	bottom: 0;
+	right: 0;
+}
+
+.board-cell .content .place, .board-cell .content .token {
+	width: 80%;
+    height: 80%;
+    -moz-border-radius: 50%; 
+    -webkit-border-radius: 50%; 
+    border-radius: 50%;
+    position: absolute;
+    top: 10%;
+    left: 10%;
+    background: #fff;
+    border: 2px solid #000;
+}
+
+.board-cell .content .token {
+	width: 60%;
+	height: 60%;
+	top: 20%;
+    left: 20%;
+}
+
+.board-cell .content .place.red {
+	background: #dd3311;
+}
+
+.board-cell .content .place.yellow {
+	background: #dddd11;
+}
+
+.board-cell .content .place.blue {
+	background: #1133dd;
+}
+
+.board-cell .content .place.green {
+	background: #11dd33;
+}
+
+.board-cell .content .token.red {
+	background: #ff6633;
+}
+
+.board-cell .content .token.yellow {
+	background: #ffff33;
+}
+
+.board-cell .content .token.blue {
+	background: #3366ff;
+}
+
+.board-cell .content .token.green {
+	background: #33ff66;
+}
+
+.board-cell .content .token.selected {
+	border-color: #f0f;
+}
+
+.timerContainer {
+	position: fixed;
+	display: block;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background-color: rgba(0, 0, 0, .8);
+}
+
+.timerTable {
+	display: table;
+	width: 100%;
+	height: 100%;
+}
+
+.timer {
+	display: table-cell;
+	font-size: 1500%;
+	color: #fff;
+	vertical-align: middle;
+	text-align: center;
+}
+
+.status {
+	margin-top: 20px;
+	font-size: 200%;
+}
+
+.results {
+	margin-top: 20px;
+}
