@@ -202,8 +202,8 @@ angular.module("client", ["dialogs.main"])
             };
 
 
-            var ws = new WebSocket('ws://html5rocks.websocket.org/echo');
-            // var ws = new WebSocket('ws://192.168.0.6:8080');
+          //  var ws = new WebSocket('ws://html5rocks.websocket.org/echo');
+             var ws = new WebSocket('ws://localhost:8181');
 
             ws.onopen = function() {
                 console.debug('Connection opened');
@@ -225,6 +225,7 @@ angular.module("client", ["dialogs.main"])
             };
             ws.onclose = function() {
                 console.debug('Close connection');
+                ws.close();
             };
             // Log errors
             ws.onerror = function(error) {
