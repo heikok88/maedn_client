@@ -4,6 +4,8 @@ angular.module("client", ["dialogs.main"])
             console.debug("Created client service");
             //an array of listeners that should be called on every event
             var listeners = [];
+            var connect = false;
+
             /**
              * Calls all listeners. The following events and parameters are defined:
              * 
@@ -106,139 +108,131 @@ angular.module("client", ["dialogs.main"])
                 }
             };
             var connectMSG = {
-                type: "action",
-                text: "connect",
+                action: "connect",
                 payload: ""
             };
             var getMatchesMSG = {
-                type: "action",
-                text: "getMatches",
+                action: "getMatches",
                 payload: ""
             };
 
             var joinMSG = {
-                type: "action",
-                text: "join",
+                action: "join",
                 payload: [{matchId: "",
                         nickname: ""}]
             };
 
             var createMSG = {
-                type: "action",
-                text: "create",
-                payload: [{nickname: ""}]
+                action: "create",
+                payload: {nickname: ""}
             };
 
             var leaveMSG = {
-                type: "action",
-                text: "leave",
+                action: "leave",
                 payload: ""
             };
 
             var updatePlayersMSG = {
-                type: "response",
-                text: "playersUpdated",
+                response: "playersUpdated",
                 payload: ""
             };
 
             var readyMSG = {
-                type: "action",
-                text: "ready",
+                action: "ready",
                 payload: ""
             };
 
             var timerStartMSG = {
-                type: "response",
-                text: "timerStarted",
+                response: "timerStarted",
                 payload: ""
             };
 
             var timerAbortMSG = {
-                type: "response",
-                text: "timertimerAborted",
+                response: "timertimerAborted",
                 payload: ""
             };
 
             var matchUpdateMSG = {
-                type: "response",
-                text: "matchUpdated",
+                response: "matchUpdated",
                 payload: ""
             };
 
             var rollDiceMSG = {
-                type: "action",
-                text: "rollDice",
+                action: "rollDice",
                 payload: ""
             };
 
             var rolledDiceMSG = {
-                type: "response",
-                text: "diceRolled",
+                response: "diceRolled",
                 payload: ""
             };
 
             var moveMSG = {
-                type: "action",
-                text: "move",
+                action: "move",
                 payload: [{fromX: "", fromY: "", toX: "", toY: ""}]
             };
 
             var playerDoneMSG = {
-                type: "action",
-                text: "playerDone",
+                action: "playerDone",
                 payload: ""
             };
 
             var matchDoneMSG = {
-                type: "response",
-                text: "matchDone",
+                response: "matchDone",
                 payload: ""
             };
 
             var matchStartMSG = {
-                type: "response",
-                text: "matchStarted",
+                response: "matchStarted",
                 payload: ""
             };
 
 
-          //  var ws = new WebSocket('ws://html5rocks.websocket.org/echo');
-             var ws = new WebSocket('ws://localhost:8181');
+            //  var ws = new WebSocket('ws://html5rocks.websocket.org/echo');
+            var websocket = new WebSocket('ws://localhost:8181');
 
-            ws.onopen = function() {
-                console.debug('Connection opened');
-                ws.send(JSON.stringify(connectMSG));
-            };
-            ws.onmessage = function(event) {
+
+
+            websocket.onmessage = function(event) {
                 console.debug('Receive Message');
                 var msg = JSON.parse(event.data);
-                switch (msg.type) {
-                    case "action":
-                        handleAction(msg.text, msg.payload);
-                        console.log("Action: " + msg.text);
-                        break;
-                    case "response":
-                        handleResponse(msg.text, msg.payload);
-                        console.log("Response: " + msg.text);
-                        break;
+                if (msg.action) {
+                    handleAction(msg.text, msg.payload);
+                    console.log("Action: " + msg.text);
+                }
+
+                if (msg.response) {
+                    handleResponse(msg.response, msg.payload);
+                    console.log("Response: " + msg.response);
                 }
             };
-            ws.onclose = function() {
+
+            /* ws.onopen = function(event) {
+             console.debug('Connection opened');
+             ws.send(JSON.stringify(connectMSG));
+             };
+             */
+            websocket.onopen = function(evt) {
+                console.debug('Connection opened');
+                websocket.send(JSON.stringify(connectMSG));
+            };
+
+            websocket.onclose = function() {
                 console.debug('Close connection');
-                ws.close();
+                websocket.close();
             };
             // Log errors
-            ws.onerror = function(error) {
+            websocket.onerror = function(error) {
                 console.log('WebSocket Error ' + error);
             };
 
             var sendRequest = function(MSG) {
-                if (ws.readyState == 1)
-                    ws.send(JSON.stringify(MSG));
+                if (websocket.readyState == 1)
+                    websocket.send(JSON.stringify(MSG));
                 else {
-                    ws.onopen = function(e) {
-                        ws.send(JSON.stringify(MSG));
-                    }
+                    /* ws.onopen = function(e) {
+                     ws.send(JSON.stringify(MSG));
+                     }*/
                 }
             };
 
@@ -246,9 +240,9 @@ angular.module("client", ["dialogs.main"])
                 if (ws.readyState == 1)
                     ws.send(JSON.stringify(MSG));
                 else {
-                    ws.onopen = function(e) {
-                        ws.send(JSON.stringify(MSG));
-                    }
+                    /*   ws.onopen = function(e) {
+                     ws.send(JSON.stringify(MSG));
+                     }*/
                 }
             };
             //return ClientService instance
@@ -282,7 +276,7 @@ angular.module("client", ["dialogs.main"])
                 },
                 create: function(nickname) {
                     console.log("New Player: " + nickname);
-                    createMSG.payload[0].nickname = nickname;
+                    createMSG.payload.nickname = nickname;
                     sendRequest(createMSG);
                 },
                 ready: function() {
