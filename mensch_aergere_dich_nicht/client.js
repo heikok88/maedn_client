@@ -48,28 +48,28 @@ angular.module("client", ["dialogs.main"])
             var handleAction = function(action, payload) {
                 if (action == "updatePlayers") {
                     fire("onUpdatePlayers", payload.matchId, payload.clients);
-                    sendResponse(updatePlayersMSG);
+                    sendMessage(updatePlayersMSG);
                 } else if (action == "timerStart") {
                     fire("onTimerStart", payload.seconds);
-                    sendResponse(timerStartMSG);
+                    sendMessage(timerStartMSG);
                 } else if (action == "timerAbort") {
                     fire("onTimerAbort");
-                    sendResponse(timerAbortMSG);
+                    sendMessage(timerAbortMSG);
                 } else if (action == "startMatch") {
                     fire("onStartMatch");
-                    sendResponse(matchStartMSG);
+                    sendMessage(matchStartMSG);
                 } else if (action == "matchUpdate") {
                     fire("onMatchUpdate", payload.currentPlayerNickname, payload.board);
-                    sendResponse(matchUpdateMSG);
+                    sendMessage(matchUpdateMSG);
                 } else if (action == "diceRolled") {
                     fire("onDiceRolled", payload.nickname, payload.eyes);
-                    sendResponse(rolledDiceMSG);
+                    sendMessage(rolledDiceMSG);
                 } else if (action == "playerDone") {
                     fire("onPlayerDone", payload.nickname);
-                    sendResponse(playerDoneMSG);
+                    sendMessage(playerDoneMSG);
                 } else if (action == "matchDone") {
                     fire("onMatchDone", payload.ranking);
-                    sendResponse(matchDoneMSG);
+                    sendMessage(matchDoneMSG);
                 } else {
                     console.error("Unknown action: " + action);
                 }
@@ -110,7 +110,7 @@ angular.module("client", ["dialogs.main"])
             var connectMSG = {
                 action: "connect"
             };
-            
+
             var getMatchesMSG = {
                 action: "getMatches"
             };
@@ -179,14 +179,41 @@ angular.module("client", ["dialogs.main"])
             //  var ws = new WebSocket('ws://html5rocks.websocket.org/echo');
             var websocket = new WebSocket('ws://localhost:8181');
 
+            function sendMessage(msg) {
+                  waitForSocketConnection(websocket, function() {
+                    console.log("message sent!!!");
+                    websocket.send(JSON.stringify(msg));
+                });
+            }
 
+            function waitForSocketConnection(socket, callback) {
+                setTimeout(
+                        function() {
+                            if (socket.readyState === 1) {
+                                console.log("Connection is made")
+                                if (callback != null) {
+                                    callback();
+                                }
+                                return;
+
+                            } else {
+                                console.log("wait for connection...")
+                                waitForSocketConnection(socket, callback);
+                            }
+
+                        }, 5); // wait 5 milisecond for the connection...
+            }
+            websocket.onopen = function(event) {
+                console.log("openWebsocket");
+                websocket.send(JSON.stringify(connectMSG));
+            };
 
             websocket.onmessage = function(event) {
                 console.debug('Receive Message');
                 var msg = JSON.parse(event.data);
                 if (msg.action) {
-                    handleAction(msg.text, msg.payload);
-                    console.log("Action: " + msg.text);
+                    handleAction(msg.action, msg.payload);
+                    console.log("Action: " + msg.action);
                 }
 
                 if (msg.response) {
@@ -204,26 +231,7 @@ angular.module("client", ["dialogs.main"])
                 console.log('WebSocket Error ' + error);
             };
 
-            var sendRequest = function(MSG) {
-                if (websocket.readyState == 1)
-                    websocket.send(JSON.stringify(MSG));
-                else {
-                    websocket.onopen = function(e) {
-                        websocket.send(JSON.stringify(MSG));
-                    }
-                }
-            };
-
-            var sendResponse = function(MSG) {
-                if (websocket.readyState == 1)
-                    websocket.send(JSON.stringify(MSG));
-                else {
-                    websocket.onopen = function(e) {
-                        websocket.send(JSON.stringify(MSG));
-                    }
-                }
-            };
-            //return ClientService instance
+             //return ClientService instance
             return {
                 /**
                  * DO NOT CHANGE!!
@@ -243,30 +251,27 @@ angular.module("client", ["dialogs.main"])
                     }
                 },
                 getMatches: function() {
-                    console.debug('Connection opened');
-                    sendRequest(connectMSG);
                     console.log("getMatches");
-
-                    sendRequest(getMatchesMSG);
+                    sendMessage(getMatchesMSG);
                 },
                 join: function(id, nickname) {
-                    console.log("Join Game:")
+                    console.log("Join Game:");
                     joinMSG.payload.matchId = id;
                     joinMSG.payload.nickname = nickname;
-                    sendRequest(joinMSG);
+                    sendMessage(joinMSG);
                 },
                 create: function(nickname) {
                     console.log("New Player: " + nickname);
                     createMSG.payload.nickname = nickname;
-                    sendRequest(createMSG);
+                    sendMessage(createMSG);
                 },
                 ready: function() {
                     console.log("Ready");
-                    sendRequest(readyMSG);
+                    sendMessage(readyMSG);
                 },
                 rollDice: function() {
                     console.log("RollDice");
-                    sendRequest(rollDiceMSG);
+                    sendMessage(rollDiceMSG);
                 },
                 move: function(fromX, fromY, toX, toY) {
                     console.log("Move");
@@ -274,11 +279,11 @@ angular.module("client", ["dialogs.main"])
                     moveMSG.payload.fromY = fromY;
                     moveMSG.payload.toX = toX;
                     moveMSG.payload.toY = toY;
-                    sendRequest(moveMSG);
+                    sendMessage(moveMSG);
                 },
                 leave: function() {
                     console.log("Leave Game");
-                    sendRequest(leaveMSG);
+                    sendMessage(leaveMSG);
                 }
             };
         });
