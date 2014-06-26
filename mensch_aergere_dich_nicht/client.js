@@ -108,18 +108,17 @@ angular.module("client", ["dialogs.main"])
                 }
             };
             var connectMSG = {
-                action: "connect",
-                payload: ""
+                action: "connect"
             };
+            
             var getMatchesMSG = {
-                action: "getMatches",
-                payload: ""
+                action: "getMatches"
             };
 
             var joinMSG = {
                 action: "join",
-                payload: [{matchId: "",
-                        nickname: ""}]
+                payload: {matchId: "",
+                    nickname: ""}
             };
 
             var createMSG = {
@@ -128,63 +127,52 @@ angular.module("client", ["dialogs.main"])
             };
 
             var leaveMSG = {
-                action: "leave",
-                payload: ""
+                action: "leave"
             };
 
             var updatePlayersMSG = {
-                response: "playersUpdated",
-                payload: ""
+                response: "playersUpdated"
             };
 
             var readyMSG = {
-                action: "ready",
-                payload: ""
+                action: "ready"
             };
 
             var timerStartMSG = {
-                response: "timerStarted",
-                payload: ""
+                response: "timerStarted"
             };
 
             var timerAbortMSG = {
-                response: "timertimerAborted",
-                payload: ""
+                response: "timertimerAborted"
             };
 
             var matchUpdateMSG = {
-                response: "matchUpdated",
-                payload: ""
+                response: "matchUpdated"
             };
 
             var rollDiceMSG = {
-                action: "rollDice",
-                payload: ""
+                action: "rollDice"
             };
 
             var rolledDiceMSG = {
-                response: "diceRolled",
-                payload: ""
+                response: "diceRolled"
             };
 
             var moveMSG = {
                 action: "move",
-                payload: [{fromX: "", fromY: "", toX: "", toY: ""}]
+                payload: {fromX: "", fromY: "", toX: "", toY: ""}
             };
 
             var playerDoneMSG = {
-                action: "playerDone",
-                payload: ""
+                action: "playerDone"
             };
 
             var matchDoneMSG = {
-                response: "matchDone",
-                payload: ""
+                response: "matchDone"
             };
 
             var matchStartMSG = {
-                response: "matchStarted",
-                payload: ""
+                response: "matchStarted"
             };
 
 
@@ -207,16 +195,6 @@ angular.module("client", ["dialogs.main"])
                 }
             };
 
-            /* ws.onopen = function(event) {
-             console.debug('Connection opened');
-             ws.send(JSON.stringify(connectMSG));
-             };
-             */
-            websocket.onopen = function(evt) {
-                console.debug('Connection opened');
-                websocket.send(JSON.stringify(connectMSG));
-            };
-
             websocket.onclose = function() {
                 console.debug('Close connection');
                 websocket.close();
@@ -230,19 +208,19 @@ angular.module("client", ["dialogs.main"])
                 if (websocket.readyState == 1)
                     websocket.send(JSON.stringify(MSG));
                 else {
-                    /* ws.onopen = function(e) {
-                     ws.send(JSON.stringify(MSG));
-                     }*/
+                    websocket.onopen = function(e) {
+                        websocket.send(JSON.stringify(MSG));
+                    }
                 }
             };
 
             var sendResponse = function(MSG) {
-                if (ws.readyState == 1)
-                    ws.send(JSON.stringify(MSG));
+                if (websocket.readyState == 1)
+                    websocket.send(JSON.stringify(MSG));
                 else {
-                    /*   ws.onopen = function(e) {
-                     ws.send(JSON.stringify(MSG));
-                     }*/
+                    websocket.onopen = function(e) {
+                        websocket.send(JSON.stringify(MSG));
+                    }
                 }
             };
             //return ClientService instance
@@ -265,13 +243,16 @@ angular.module("client", ["dialogs.main"])
                     }
                 },
                 getMatches: function() {
+                    console.debug('Connection opened');
+                    sendRequest(connectMSG);
                     console.log("getMatches");
+
                     sendRequest(getMatchesMSG);
                 },
                 join: function(id, nickname) {
                     console.log("Join Game:")
-                    joinMSG.payload[0].matchId = id;
-                    joinMSG.payload[0].nickname = nickname;
+                    joinMSG.payload.matchId = id;
+                    joinMSG.payload.nickname = nickname;
                     sendRequest(joinMSG);
                 },
                 create: function(nickname) {
@@ -289,10 +270,10 @@ angular.module("client", ["dialogs.main"])
                 },
                 move: function(fromX, fromY, toX, toY) {
                     console.log("Move");
-                    moveMSG.payload[0].fromX = fromX;
-                    moveMSG.payload[0].fromY = fromY;
-                    moveMSG.payload[0].toX = toX;
-                    moveMSG.payload[0].toY = toY;
+                    moveMSG.payload.fromX = fromX;
+                    moveMSG.payload.fromY = fromY;
+                    moveMSG.payload.toX = toX;
+                    moveMSG.payload.toY = toY;
                     sendRequest(moveMSG);
                 },
                 leave: function() {
