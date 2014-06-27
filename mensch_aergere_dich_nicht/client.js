@@ -55,7 +55,7 @@ angular.module("client", ["dialogs.main"])
                 } else if (action == "timerAbort") {
                     fire("onTimerAbort");
                     sendMessage(timerAbortMSG);
-                } else if (action == "startMatch") {
+                } else if (action == "matchStart") {
                     fire("onStartMatch");
                     sendMessage(matchStartMSG);
                 } else if (action == "matchUpdate") {
