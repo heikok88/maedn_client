@@ -4,7 +4,7 @@ angular.module("client", ["dialogs.main"])
             console.debug("Created client service");
             //an array of listeners that should be called on every event
             var listeners = [];
-            var connect = false;
+            var connected = false;
 
             /**
              * Calls all listeners. The following events and parameters are defined:
@@ -80,9 +80,10 @@ angular.module("client", ["dialogs.main"])
              * @param payload the response's payload
              */
             var handleResponse = function(response, payload) {
-                if (response == "connected") {
-                    console.log("New Player connecterd successful");
-                    //TODO can be ignored?
+                if (response == "connected") {                 
+                    connected=true;
+                    sendMessage(getMatchesMSG);              
+                    console.log("New Player connecterd successful"); 
                 } else if (response == "matches") {
                     //TODO call all listeners
                     fire("onMatches", payload.matches);
@@ -164,7 +165,7 @@ angular.module("client", ["dialogs.main"])
             };
 
             var playerDoneMSG = {
-                action: "playerDone"
+                response: "playerDone"
             };
 
             var matchDoneMSG = {
@@ -180,8 +181,8 @@ angular.module("client", ["dialogs.main"])
             var websocket = new WebSocket('ws://localhost:8181');
 
             function sendMessage(msg) {
-                  waitForSocketConnection(websocket, function() {
-                    console.log("message sent!!!");
+                waitForSocketConnection(websocket, function() {
+                    console.log("Client send: " + JSON.stringify(msg));
                     websocket.send(JSON.stringify(msg));
                 });
             }
@@ -190,35 +191,35 @@ angular.module("client", ["dialogs.main"])
                 setTimeout(
                         function() {
                             if (socket.readyState === 1) {
-                                console.log("Connection is made")
+                                // console.log("Connection is made")
                                 if (callback != null) {
                                     callback();
                                 }
                                 return;
 
                             } else {
-                                console.log("wait for connection...")
+                                //  console.log("wait for connection...")
                                 waitForSocketConnection(socket, callback);
                             }
 
                         }, 5); // wait 5 milisecond for the connection...
             }
             websocket.onopen = function(event) {
-                console.log("openWebsocket");
+                // console.log("openWebsocket");
+                console.log("Client send: " + JSON.stringify(connectMSG));
                 websocket.send(JSON.stringify(connectMSG));
             };
 
             websocket.onmessage = function(event) {
-                console.debug('Receive Message');
                 var msg = JSON.parse(event.data);
                 if (msg.action) {
                     handleAction(msg.action, msg.payload);
-                    console.log("Action: " + msg.action);
+                    console.log("Server send: {action: " + msg.action+"}");
                 }
 
                 if (msg.response) {
                     handleResponse(msg.response, msg.payload);
-                    console.log("Response: " + msg.response);
+                    console.log("Server send:  {response: " + msg.response+"}");
                 }
             };
 
@@ -231,7 +232,7 @@ angular.module("client", ["dialogs.main"])
                 console.log('WebSocket Error ' + error);
             };
 
-             //return ClientService instance
+            //return ClientService instance
             return {
                 /**
                  * DO NOT CHANGE!!
@@ -251,8 +252,8 @@ angular.module("client", ["dialogs.main"])
                     }
                 },
                 getMatches: function() {
-                    console.log("getMatches");
-                    sendMessage(getMatchesMSG);
+                    if(connected)
+                        sendMessage(getMatchesMSG);
                 },
                 join: function(id, nickname) {
                     console.log("Join Game:");
